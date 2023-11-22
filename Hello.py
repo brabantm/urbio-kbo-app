@@ -14,18 +14,28 @@
 
 import streamlit as st
 from streamlit.logger import get_logger
+import urllib.parse
 
 LOGGER = get_logger(__name__)
 
 
 def run():
     st.set_page_config(
-        page_title="Hello",
         page_icon="👋",
     )
+        # Get the URL query parameters
+    url = st.get_option("browser.serverAddress")
+    query_params = urllib.parse.urlparse(url).query
+    parsed_query_params = st.experimental_get_query_params()
 
-    st.write("# Welcome to Streamlit! 👋")
-
+    # # Set the page title based on the 'title' URL parameter
+    if 'buildingID' in parsed_query_params:
+        title = parsed_query_params['buildingID'][0]
+        st.title("BuildingID: "+title)
+      
+    else:
+        st.title("hello")
+        
     st.sidebar.success("Select a demo above.")
 
     st.markdown(
