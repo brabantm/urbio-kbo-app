@@ -12,12 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pandas as pd
 import streamlit as st
 from streamlit.logger import get_logger
 import urllib.parse
 
+from google.oauth2 import service_account
+from google.cloud import bigquery
+
 LOGGER = get_logger(__name__)
 
+# Create API client.
+credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"]
+)
+client = bigquery.Client(credentials=credentials)
+
+# Perform query.
+# Uses st.cache_data to only rerun when the query changes or after 10 min.
+@st.cache_data(ttl=600)
+def run_query(query):
+    query_job = client.query(query)
+    rows_raw = query_job.to_dataframe()
+    # Convert to list of dicts. Required for st.cache_data to hash the return value.
+    df = rows_raw
+    return df
 
 def run():
     st.set_page_config(
@@ -32,9 +51,16 @@ def run():
     if 'buildingID' in parsed_query_params:
         title = parsed_query_params['buildingID'][0]
         st.title("BuildingID: "+title)
+        
+        rows = run_query(f"SELECT *  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title} LIMIT 10")
+
+        st.dataframe(rows[["EntityNumber", "Denomination"]])
+        
       
     else:
+        
         st.title("hello")
+        
         
     st.sidebar.success("Select a demo above.")
 
