@@ -54,10 +54,14 @@ def run():
         
         rows = run_query(f"SELECT *  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title} LIMIT 10")
 
-        st.dataframe(rows[["EntityNumber", "Denomination"]])
-
         maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&q={rows.loc[0,'lat_urbio']},{rows.loc[0,'lon_urbio']}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
-        st.components.v1.iframe(maps_url, width="100%", height="300px", scrolling=False)
+        st.components.v1.iframe(maps_url, width=None, height=300, scrolling=False)
+
+        rows["OTB"] = "<a href='https://openthebox.be/company/BE" + rows["EntityNumber"].str.replace(".", "")+"'>OTB</a>"
+        # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
+        st.markdown(rows[["EntityNumber", "Denomination", "OTB"]].to_html(render_links=True, escape=False),unsafe_allow_html=True)
+
+
 
 
         
@@ -67,25 +71,25 @@ def run():
         st.title("hello")
         
         
-    st.sidebar.success("Select a demo above.")
+    # st.sidebar.success("Select a demo above.")
 
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    """
-    )
+    # st.markdown(
+    #     """
+    #     Streamlit is an open-source app framework built specifically for
+    #     Machine Learning and Data Science projects.
+    #     **👈 Select a demo from the sidebar** to see some examples
+    #     of what Streamlit can do!
+    #     ### Want to learn more?
+    #     - Check out [streamlit.io](https://streamlit.io)
+    #     - Jump into our [documentation](https://docs.streamlit.io)
+    #     - Ask a question in our [community
+    #       forums](https://discuss.streamlit.io)
+    #     ### See more complex demos
+    #     - Use a neural net to [analyze the Udacity Self-driving Car Image
+    #       Dataset](https://github.com/streamlit/demo-self-driving)
+    #     - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
+    # """
+    # )
 
 
 if __name__ == "__main__":
