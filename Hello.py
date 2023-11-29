@@ -55,6 +55,11 @@ def run():
         rows = run_query(f"SELECT *  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title} LIMIT 10")
 
         st.dataframe(rows[["EntityNumber", "Denomination"]])
+
+        maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&q={rows.loc[0,'lat_urbio']},{rows.loc[0,'lon_urbio']}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
+        st.components.v1.iframe(maps_url, width="100%", height="300px", scrolling=False)
+
+
         
       
     else:
