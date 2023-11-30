@@ -49,13 +49,13 @@ def run():
 
     # # Set the page title based on the 'title' URL parameter
     if 'buildingID' in parsed_query_params:
-        title = str(int(float(parsed_query_params['buildingID'][0])))
+        
         try:
-            
+            title = str(int(float(parsed_query_params['buildingID'][0])))
             st.title("BuildingID: "+title)
         except:
             st.title("BuildingID is not a int/float")
-        
+            return
         
         rows = load_companies(f"SELECT *  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title} LIMIT 30")
         count = load_companies(f"SELECT COUNT(EntityNumber)  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title}").iloc[0,0]
