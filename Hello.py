@@ -31,7 +31,7 @@ client = bigquery.Client(credentials=credentials)
 # Perform query.
 # Uses st.cache_data to only rerun when the query changes or after 10 min.
 @st.cache_data(ttl=600)
-def run_query(query):
+def load_companies(query):
     query_job = client.query(query)
     rows_raw = query_job.to_dataframe()
     # Convert to list of dicts. Required for st.cache_data to hash the return value.
@@ -49,20 +49,29 @@ def run():
 
     # # Set the page title based on the 'title' URL parameter
     if 'buildingID' in parsed_query_params:
-        title = parsed_query_params['buildingID'][0]
-        st.title("BuildingID: "+title)
+        title = str(int(float(parsed_query_params['buildingID'][0])))
+        try:
+            
+            st.title("BuildingID: "+title)
+        except:
+            st.title("BuildingID is not a int/float")
         
-        rows = run_query(f"SELECT *  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title} LIMIT 10")
-
+        
+        rows = load_companies(f"SELECT *  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title} LIMIT 30")
+        count = load_companies(f"SELECT COUNT(EntityNumber)  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title}").iloc[0,0]
+        if count==0:
+            st.markdown("""### Building has no company""")
+            return
+        else:
+            st.markdown(f"""### {count} companies found""")
         maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&q={rows.loc[0,'lat_urbio']},{rows.loc[0,'lon_urbio']}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
         st.components.v1.iframe(maps_url, width=None, height=300, scrolling=False)
 
         rows["OTB"] = "<a href='https://openthebox.be/company/BE" + rows["EntityNumber"].str.replace(".", "")+"'>OTB</a>"
+        rows["Bizzy"] = "<a href='https://bizzy.org/en/be/" + rows["EntityNumber"].str.replace(".", "")+"'>Bizzy</a>"
+
         # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
-        st.markdown(rows[["EntityNumber", "Denomination", "OTB"]].to_html(render_links=True, escape=False),unsafe_allow_html=True)
-
-
-
+        st.markdown(rows[["EntityNumber", "Denomination", "OTB", "Bizzy"]].to_html(render_links=True, escape=False),unsafe_allow_html=True)
 
         
       
