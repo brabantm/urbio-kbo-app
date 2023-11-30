@@ -57,7 +57,7 @@ def run():
             st.title("BuildingID is not a int/float")
             return
         
-        rows = load_companies(f"SELECT *  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title} LIMIT 30")
+        rows = load_companies(f"SELECT *  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title} LIMIT 50")
         count = load_companies(f"SELECT COUNT(EntityNumber)  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title}").iloc[0,0]
         if count==0:
             st.markdown("""### Building has no company""")
@@ -71,7 +71,7 @@ def run():
         rows["Bizzy"] = "<a href='https://bizzy.org/en/be/" + rows["EntityNumber"].str.replace(".", "")+"'>Bizzy</a>"
 
         # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
-        st.markdown(rows[["EntityNumber", "Denomination", "OTB", "Bizzy"]].to_html(render_links=True, escape=False),unsafe_allow_html=True)
+        st.markdown(rows[["EntityNumber", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True).to_html(render_links=True, escape=False),unsafe_allow_html=True)
 
         
       
