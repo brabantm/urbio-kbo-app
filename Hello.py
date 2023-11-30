@@ -69,7 +69,7 @@ def run():
 
         rows["OTB"] = "<a href='https://openthebox.be/company/BE" + rows["EntityNumber"].str.replace(".", "")+"'>OTB</a>"
         rows["Bizzy"] = "<a href='https://bizzy.org/en/be/" + rows["EntityNumber"].str.replace(".", "")+"'>Bizzy</a>"
-
+ #test
         # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
         st.markdown(rows[["EntityNumber", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True).to_html(render_links=True, escape=False),unsafe_allow_html=True)
 
