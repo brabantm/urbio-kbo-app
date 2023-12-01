@@ -20,6 +20,7 @@ import urllib.parse
 from google.oauth2 import service_account
 from google.cloud import bigquery
 
+
 LOGGER = get_logger(__name__)
 
 # Create API client.
@@ -41,6 +42,7 @@ def load_companies(query):
 def run():
     st.set_page_config(
         page_icon="👋",
+        layout="wide"
     )
         # Get the URL query parameters
     url = st.get_option("browser.serverAddress")
@@ -62,13 +64,13 @@ def run():
         if count==0:
             st.markdown("""### Building has no company""")
             if 'lat' in parsed_query_params and'lon' in parsed_query_params:
-                maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&q={parsed_query_params['lat'][0]},{parsed_query_params['lon'][0]}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
+                maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&maptype=satellite&q={parsed_query_params['lat'][0]},{parsed_query_params['lon'][0]}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
                 st.components.v1.iframe(maps_url, width=None, height=300, scrolling=False)
             return
         else:
             st.markdown(f"""### {count} companies found""")
-        maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&q={rows.loc[0,'lat_urbio']},{rows.loc[0,'lon_urbio']}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
-        st.components.v1.iframe(maps_url, width=None, height=300, scrolling=False)
+        maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&maptype=satellite&q={rows.loc[0,'lat_urbio']},{rows.loc[0,'lon_urbio']}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
+        st.components.v1.iframe(maps_url, width=None, height=500, scrolling=False)
 
         rows["OTB"] = "<a href='https://openthebox.be/company/BE" + rows["EntityNumber"].str.replace(".", "")+"'>OTB</a>"
         rows["Bizzy"] = "<a href='https://bizzy.org/en/be/" + rows["EntityNumber"].str.replace(".", "")+"'>Bizzy</a>"
