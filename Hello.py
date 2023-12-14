@@ -60,12 +60,8 @@ def run():
             return
         
         rows = load_companies(f"SELECT DISTINCT(Denomination), EntityNumber, lat_urbio, lon_urbio, HeadOffice, HeadOfficeVAT FROM `elaborate-night-388209.test.urbio_` WHERE `building_id` = {title} LIMIT 200")
-        headOffices = load_companies(f"SELECT COUNT(DISTINCT HeadOfficeVAT)  FROM `elaborate-night-388209.test.urbio_` WHERE `building_id` = {title} AND `HeadOffice` = true").iloc[0,0]
-        establishments = load_companies(f"SELECT COUNT(DISTINCT HeadOfficeVAT)  FROM `elaborate-night-388209.test.urbio_` WHERE `building_id` = {title} AND `HeadOffice` = false").iloc[0,0]
-        
-        # est = load_companies(f"SELECT DISTINCT HeadOfficeVAT FROM `elaborate-night-388209.test.urbio_` WHERE `building_id` = {title} AND HeadOfficeVAT NOT IN ({', '.join(map(str, rows["HeadOfficeVAT"]))} LIMIT 200")
-        count = headOffices+establishments
-        if (count)==0:
+
+        if len(rows)<1:
             st.markdown("""### Building has no company""")
             if 'lat' in parsed_query_params and'lon' in parsed_query_params:
                 maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&maptype=satellite&q={parsed_query_params['lat'][0]},{parsed_query_params['lon'][0]}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
