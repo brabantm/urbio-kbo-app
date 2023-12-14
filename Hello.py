@@ -59,24 +59,45 @@ def run():
             st.title("BuildingID is not a int/float")
             return
         
-        rows = load_companies(f"SELECT *  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title} LIMIT 200")
-        count = load_companies(f"SELECT COUNT(EntityNumber)  FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title}").iloc[0,0]
-        if count==0:
+        rows = load_companies(f"SELECT DISTINCT(Denomination), EntityNumber, lat_urbio, lon_urbio, HeadOffice, HeadOfficeVAT FROM `elaborate-night-388209.test.urbio_` WHERE `building_id` = {title} LIMIT 200")
+        headOffices = load_companies(f"SELECT COUNT(DISTINCT HeadOfficeVAT)  FROM `elaborate-night-388209.test.urbio_` WHERE `building_id` = {title} AND `HeadOffice` = true").iloc[0,0]
+        establishments = load_companies(f"SELECT COUNT(DISTINCT HeadOfficeVAT)  FROM `elaborate-night-388209.test.urbio_` WHERE `building_id` = {title} AND `HeadOffice` = false").iloc[0,0]
+        
+        # est = load_companies(f"SELECT DISTINCT HeadOfficeVAT FROM `elaborate-night-388209.test.urbio_` WHERE `building_id` = {title} AND HeadOfficeVAT NOT IN ({', '.join(map(str, rows["HeadOfficeVAT"]))} LIMIT 200")
+        count = headOffices+establishments
+        if (count)==0:
             st.markdown("""### Building has no company""")
             if 'lat' in parsed_query_params and'lon' in parsed_query_params:
                 maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&maptype=satellite&q={parsed_query_params['lat'][0]},{parsed_query_params['lon'][0]}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
                 st.components.v1.iframe(maps_url, width=None, height=300, scrolling=False)
             return
         else:
-            st.markdown(f"""### {count} companies found""")
+            
+            rows["OTB"] = "<a href='https://openthebox.be/company/BE" + rows["HeadOfficeVAT"].str.replace(".", "")+"'>OTB</a>"
+            rows["Bizzy"] = "<a href='https://bizzy.org/en/be/" + rows["HeadOfficeVAT"].str.replace(".", "")+"'>Bizzy</a>"
+            
+            HQs = rows[rows['HeadOffice']]
+            est = rows[~rows['HeadOffice'] & ~rows['HeadOfficeVAT'].isin(HQs['HeadOfficeVAT'])]
+
+            st.markdown(f"""### Building hosts {len(HQs) + len(est)} companies""")
         maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&maptype=satellite&q={rows.loc[0,'lat_urbio']},{rows.loc[0,'lon_urbio']}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
         st.components.v1.iframe(maps_url, width=None, height=500, scrolling=False)
 
-        rows["OTB"] = "<a href='https://openthebox.be/company/BE" + rows["EntityNumber"].str.replace(".", "")+"'>OTB</a>"
-        rows["Bizzy"] = "<a href='https://bizzy.org/en/be/" + rows["EntityNumber"].str.replace(".", "")+"'>Bizzy</a>"
- #test
-        # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
-        st.markdown(rows[["EntityNumber", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True).to_html(render_links=True, escape=False),unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+
+        with col1:
+            
+            st.markdown(f"## Head Offices ({len(HQs)})")
+            
+            # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
+            st.markdown(HQs[["EntityNumber", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True).to_html(render_links=True, escape=False),unsafe_allow_html=True)
+
+
+        with col2:
+            st.markdown(f"## Establishment Units ({len(est)})")
+            
+            # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
+            st.markdown(est[["EntityNumber", "HeadOfficeVAT", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True).to_html(render_links=True, escape=False),unsafe_allow_html=True)
 
         
       
