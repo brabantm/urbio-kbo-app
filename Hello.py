@@ -79,27 +79,27 @@ def run():
         maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&maptype=satellite&q={rows.loc[0,'lat_urbio']},{rows.loc[0,'lon_urbio']}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
         st.components.v1.iframe(maps_url, width=None, height=500, scrolling=False)
 
-        col1, col2 = st.columns(2)
+        # col1, col2 = st.columns([0.45,0.55], gap="large")
 
-        with col1:
+        # with col1:
             
-            st.markdown(f"## Head Offices ({len(HQs)})")
-            
-            # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
-            st.markdown(HQs[["EntityNumber", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True).to_html(render_links=True, escape=False),unsafe_allow_html=True)
+        st.markdown(f"## Head Offices ({len(HQs)})")
+        
+        # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
+        st.markdown(HQs[["EntityNumber", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True).to_html(render_links=True, escape=False),unsafe_allow_html=True)
+        # st.dataframe(HQs[["EntityNumber", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True))
 
-
-        with col2:
-            st.markdown(f"## Establishment Units ({len(est)})")
-            
-            # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
-            st.markdown(est[["EntityNumber", "HeadOfficeVAT", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True).to_html(render_links=True, escape=False),unsafe_allow_html=True)
+        # with col2:
+        st.markdown(f"## Establishment Units ({len(est)})")
+        
+        # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
+        st.markdown(est[["EntityNumber", "HeadOfficeVAT", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True).to_html(render_links=True, escape=False),unsafe_allow_html=True)
 
         
       
     else:
         
-        st.title("hello")
+        st.title("Web-app is missing a parameter.")
         
         
     # st.sidebar.success("Select a demo above.")
