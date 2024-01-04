@@ -59,7 +59,7 @@ def run():
             st.title("BuildingID is not a int/float")
             return
         
-        rows = load_companies(f"SELECT DISTINCT(Denomination), EntityNumber, lat_urbio, lon_urbio, HeadOffice, HeadOfficeVAT FROM `elaborate-night-388209.test.urbio_` WHERE `building_id` = {title} LIMIT 200")
+        rows = load_companies(f"SELECT DISTINCT(Denomination), EntityNumber, lat_urbio, lon_urbio, HeadOffice, HeadOfficeVAT FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title} LIMIT 200")
 
         if len(rows)<1:
             st.markdown("""### Building has no company""")
