@@ -20,6 +20,7 @@ import urllib.parse
 from google.oauth2 import service_account
 from google.cloud import bigquery
 
+import streamlit.components.v1 as components
 
 LOGGER = get_logger(__name__)
 
@@ -65,7 +66,7 @@ def run():
             st.markdown("""### Building has no company""")
             if 'lat' in parsed_query_params and'lon' in parsed_query_params:
                 maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&maptype=satellite&q={parsed_query_params['lat'][0]},{parsed_query_params['lon'][0]}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
-                st.components.v1.iframe(maps_url, width=None, height=300, scrolling=False)
+                components.iframe(maps_url, width=None, height=300, scrolling=False)
             return
         else:
             
@@ -77,7 +78,7 @@ def run():
 
             st.markdown(f"""### Building hosts {len(HQs) + len(est)} companies""")
         maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&maptype=satellite&q={rows.loc[0,'lat_urbio']},{rows.loc[0,'lon_urbio']}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
-        st.components.v1.iframe(maps_url, width=None, height=500, scrolling=False)
+        components.iframe(maps_url, width=None, height=500, scrolling=False)
 
         # col1, col2 = st.columns([0.45,0.55], gap="large")
 
