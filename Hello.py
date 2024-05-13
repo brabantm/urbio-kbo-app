@@ -47,14 +47,14 @@ def run():
     )
         # Get the URL query parameters
     url = st.get_option("browser.serverAddress")
-    #query_params = urllib.parse.urlparse(url).query
+    query_params = urllib.parse.urlparse(url).query
     parsed_query_params = st.query_params
 
     # # Set the page title based on the 'title' URL parameter
     if 'buildingID' in parsed_query_params:
         
         try:
-            title = str(int(float(parsed_query_params['buildingID'][0])))
+            title = str(int(float(parsed_query_params['buildingID'])))
             st.title("BuildingID: "+title)
         except:
             st.title("BuildingID is not a int/float")
@@ -65,7 +65,7 @@ def run():
         if len(rows)<1:
             st.markdown("""### Building has no company""")
             if 'lat' in parsed_query_params and'lon' in parsed_query_params:
-                maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&maptype=satellite&q={parsed_query_params['lat'][0]},{parsed_query_params['lon'][0]}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
+                maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&maptype=satellite&q={parsed_query_params['lat']},{parsed_query_params['lon']}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
                 components.iframe(maps_url, width=None, height=300, scrolling=False)
             return
         else:
