@@ -46,9 +46,7 @@ def run():
         layout="wide"
     )
         # Get the URL query parameters
-    url = st.get_option("browser.serverAddress")
-    query_params = urllib.parse.urlparse(url).query
-    parsed_query_params = st.query_params
+    parsed_query_params = st.query_params.to_dict()
 
     # # Set the page title based on the 'title' URL parameter
     if 'buildingID' in parsed_query_params:
