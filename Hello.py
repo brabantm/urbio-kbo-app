@@ -46,8 +46,12 @@ def run():
         layout="wide"
     )
         # Get the URL query parameters
-    parsed_query_params = st.query_params.to_dict()
-
+    #parsed_query_params = st.query_params.to_dict()
+    # Get the URL query parameters using experimental function
+    parsed_query_params = st.experimental_get_query_params()
+    
+    # Convert the query parameters to a dictionary
+    parsed_query_params = {k: v[0] for k, v in parsed_query_params.items()}
     # # Set the page title based on the 'title' URL parameter
     if 'buildingID' in parsed_query_params:
         
