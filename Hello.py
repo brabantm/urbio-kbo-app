@@ -36,6 +36,7 @@ client = bigquery.Client(credentials=credentials)
 def load_companies(query):
     query_job = client.query(query)
     rows_raw = query_job.to_dataframe()
+    
     # Convert to list of dicts. Required for st.cache_data to hash the return value.
     df = rows_raw
     return df
@@ -45,15 +46,13 @@ def run():
         page_icon="👋",
         layout="wide"
     )
-        # Get the URL query parameters
+    # Get the URL query parameters
     try: 
         parsed_query_params = st.query_params
-    # Get the URL query parameters using experimental function
     except AttributeError:
         parsed_query_params = st.experimental_get_query_params()
-     # Convert the query parameters to a dictionary
         parsed_query_params = {k: v[0] for k, v in parsed_query_params.items()}
-    # # Set the page title based on the 'title' URL parameter
+    
     if 'buildingID' in parsed_query_params:
         
         try:
@@ -62,9 +61,11 @@ def run():
         except:
             st.title("BuildingID is not a int/float")
             return
-        
+
+        # SQL Query
         rows = load_companies(f"SELECT DISTINCT(Denomination), EntityNumber, lat_urbio, lon_urbio, HeadOffice, HeadOfficeVAT FROM `elaborate-night-388209.test.urbio` WHERE `building_id` = {title} LIMIT 200")
 
+        
         if len(rows)<1:
             st.markdown("""### Building has no company""")
             if 'lat' in parsed_query_params and'lon' in parsed_query_params:
@@ -80,51 +81,21 @@ def run():
             est = rows[~rows['HeadOffice'] & ~rows['HeadOfficeVAT'].isin(HQs['HeadOfficeVAT'])]
 
             st.markdown(f"""### Building hosts {len(HQs) + len(est)} companies""")
+
+        # Gmaps
         maps_url = f"https://www.google.com/maps/embed/v1/place?zoom=18&maptype=satellite&q={rows.loc[0,'lat_urbio']},{rows.loc[0,'lon_urbio']}&key=AIzaSyAqriQ2C8n_ql4HrJFB5tyEdY_36tYT77k"
         components.iframe(maps_url, width=None, height=500, scrolling=False)
 
-        # col1, col2 = st.columns([0.45,0.55], gap="large")
-
-        # with col1:
-            
+        # show head offices df
         st.markdown(f"## Head Offices ({len(HQs)})")
-        
-        # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
         st.markdown(HQs[["EntityNumber", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True).to_html(render_links=True, escape=False),unsafe_allow_html=True)
-        # st.dataframe(HQs[["EntityNumber", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True))
 
-        # with col2:
+        # show establishment units df
         st.markdown(f"## Establishment Units ({len(est)})")
-        
-        # st.dataframe(rows[["EntityNumber", "Denomination", "OTB"]])
         st.markdown(est[["EntityNumber", "HeadOfficeVAT", "Denomination", "OTB", "Bizzy"]].sort_values("Denomination").reset_index(drop=True).to_html(render_links=True, escape=False),unsafe_allow_html=True)
 
-        
-      
     else:
-        
         st.title("Web-app is missing a parameter.")
-        
-        
-    # st.sidebar.success("Select a demo above.")
-
-    # st.markdown(
-    #     """
-    #     Streamlit is an open-source app framework built specifically for
-    #     Machine Learning and Data Science projects.
-    #     **👈 Select a demo from the sidebar** to see some examples
-    #     of what Streamlit can do!
-    #     ### Want to learn more?
-    #     - Check out [streamlit.io](https://streamlit.io)
-    #     - Jump into our [documentation](https://docs.streamlit.io)
-    #     - Ask a question in our [community
-    #       forums](https://discuss.streamlit.io)
-    #     ### See more complex demos
-    #     - Use a neural net to [analyze the Udacity Self-driving Car Image
-    #       Dataset](https://github.com/streamlit/demo-self-driving)
-    #     - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    # """
-    # )
 
 
 if __name__ == "__main__":
